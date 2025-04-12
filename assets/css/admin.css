@@ -1,0 +1,9 @@
+.toplevel_page_payping-installment .wp-menu-image img {
+    width: 34px;
+    height: auto;
+    padding: 0 !important;
+    margin-right: -1px;
+}
+.toplevel_page_payping-installment .wp-menu-name {
+    margin-right: 4px;
+}
