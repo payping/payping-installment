@@ -107,7 +107,7 @@ class WooPayPingInstallment extends WC_Payment_Gateway{
         }
 
         // Shortcode-based checkout
-        if ('shortcode' === $checkout_type && $this->mobile_number_type == 'force_add_field') {
+        if ('shortcode' === $checkout_type || 'none' === $checkout_type && $this->mobile_number_type == 'force_add_field') {
             $this->register_shortcode_checkout_hooks();
         }
     }
@@ -728,6 +728,7 @@ class WooPayPingInstallment extends WC_Payment_Gateway{
 	}
 
     public function get_customer_mobile($order): string {
+        
         if ($this->shouldUseDigitsMobile()) {
             return digits_get_mobile(get_current_user_id()) ?: '';
         }
@@ -739,7 +740,7 @@ class WooPayPingInstallment extends WC_Payment_Gateway{
         if ($this->isForceFieldActive()) {
             return $this->getForcedMobileNumber($order);
         }
-    
+        
         return '';
     }
     
@@ -756,15 +757,12 @@ class WooPayPingInstallment extends WC_Payment_Gateway{
     }
     
     private function isForceFieldActive(): bool {
-        return $this->mobile_number_type === 'force_add_field';
+        return $this->mobile_number_type == 'force_add_field';
     }
     
     private function getForcedMobileNumber($order): string {
-        $fields = Package::container()->get(CheckoutFields::class)
-            ->get_all_fields_from_object($order, 'billing');
-    
+        $fields = Package::container()->get(CheckoutFields::class)->get_all_fields_from_object($order, 'billing');
         $mobile = $fields['payping_installment/mobile_number'] ?? $order->get_meta('_mobile_number');
-        
         return sanitize_text_field($mobile);
     }
 
@@ -1119,9 +1117,11 @@ class WooPayPingInstallment extends WC_Payment_Gateway{
 
     public function save_mobile_meta($order_id) {
         $order = wc_get_order($order_id);
+        
         if (!empty($_POST['mobile_number'])) {
             // Save to order meta
             $order->update_meta_data('_mobile_number', sanitize_text_field($_POST['mobile_number']));
+            $order->save();
         }
     }
     
