@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PayPing Installment for wordpress
  * Description: افزونه درگاه پرداخت اقساطی پی‌پینگ برای وردپرس
- * Version: 0.0.0
+ * Version: 0.0.2
  * Requires at least: 6.5
  * Requires PHP: 7.2
  * Author: PHP Team PayPing
