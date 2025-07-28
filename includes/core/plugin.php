@@ -16,7 +16,7 @@ class Plugin {
     }
 
     private function init() {
-        add_action('plugins_loaded', [$this, 'init_gateway']);
+        add_action('init', [$this, 'init_gateway']);
         add_action('admin_enqueue_scripts', [$this, 'payping_installment_wp_admin_css_and_js']);
     }
 
