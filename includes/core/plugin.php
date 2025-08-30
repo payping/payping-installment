@@ -16,12 +16,17 @@ class Plugin {
     }
 
     private function init() {
-        add_action('init', [$this, 'init_gateway']);
-        add_action('admin_enqueue_scripts', [$this, 'payping_installment_wp_admin_css_and_js']);
+        \add_action('plugins_loaded', [$this, 'init_gateway']);
+        \add_action('admin_enqueue_scripts', [$this, 'payping_installment_wp_admin_css_and_js']);
     }
 
     public function init_gateway() {
-        load_plugin_textdomain('payping-installment', false, trailingslashit(PPINSTLMNT_PLUGIN_DIR) . 'languages/');
+        // Load admin functions if not loaded
+        if (!\function_exists('is_plugin_active')) {
+            require_once(\ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        
+        \load_plugin_textdomain('payping-installment', false, \trailingslashit(PPINSTLMNT_PLUGIN_DIR) . 'languages/');
         new \PayPingInstallment\admin\admin();
         new \PayPingInstallment\Payment\Gateway();
     }
@@ -33,7 +38,7 @@ class Plugin {
             
         ];
 
-        wp_enqueue_style(
+        \wp_enqueue_style(
             'payping_installment_wp_admin',
             PPINSTLMNT_PLUGIN_URL.'assets/css/admin.css',
             [],
@@ -42,14 +47,14 @@ class Plugin {
     
         if(strpos($hook, 'payping-installment') !== false || in_array($hook, $allowed_pages)){
 
-            wp_enqueue_style(
+            \wp_enqueue_style(
                 'payping_installment_wp_admin_pp_installment',
                 PPINSTLMNT_PLUGIN_URL.'assets/css/admin_pp_installment.css',
                 [],
                 filemtime(PPINSTLMNT_PLUGIN_DIR . 'assets/css/admin_pp_installment.css')
             );
             
-            wp_enqueue_script(
+            \wp_enqueue_script(
                 'payping_installment_wp_admin',
                 PPINSTLMNT_PLUGIN_URL . 'assets/js/admin.js',
                 ['jquery', 'wp-i18n'],
@@ -57,9 +62,9 @@ class Plugin {
                 true
             );
     
-            wp_localize_script('payping_installment_wp_admin', 'paypingData', [
-                'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('payping-installment-nonce')
+            \wp_localize_script('payping_installment_wp_admin', 'paypingData', [
+                'ajaxurl' => \admin_url('admin-ajax.php'),
+                'nonce' => \wp_create_nonce('payping-installment-nonce')
             ]);
         }
     }

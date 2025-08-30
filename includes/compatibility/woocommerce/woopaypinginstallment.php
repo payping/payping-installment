@@ -31,10 +31,20 @@ class WooPayPingInstallment extends WC_Payment_Gateway{
     public function is_available() {
         // Disable for WooCommerce Blocks checkout
         if (function_exists('is_wc_block_checkout') && is_wc_block_checkout()) {
+            error_log('PayPing Installment: Gateway disabled for WooCommerce Blocks checkout');
             return false;
         }
         
-        return parent::is_available();
+        // Check if token is configured
+        if (empty($this->paypingToken)) {
+            error_log('PayPing Installment: Gateway not available - Token is empty or not configured');
+            return false;
+        }
+        
+        $parent_available = parent::is_available();
+        error_log('PayPing Installment: Gateway availability check - Token OK, Parent available: ' . ($parent_available ? 'YES' : 'NO'));
+        
+        return $parent_available;
     }
 	
 	/**
